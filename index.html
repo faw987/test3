@@ -1,0 +1,203 @@
+<html>
+<body>
+
+<style>
+/* 
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map. 
+ */
+#map {
+  height: 50%;
+}
+</style>
+
+<h1>FAW</h1>
+
+
+<h2>Fullscreen with JavaScript</h2>
+<p>Click on the "Open Fullscreen" button to open this page in fullscreen mode. Close it by either clicking the "Esc" key on your keyboard, or with the "Close Fullscreen" button.</p>
+
+<button onclick="openFullscreen();">Open Fullscreen</button>
+<button onclick="closeFullscreen();">Close Fullscreen</button>
+
+<button onclick=
+    "show_image('file:///D:/Dropbox/Dropbox/pictures_Japan_0913_to_0916_mostlyTokyo/IMG_20140915_191859_194.jpg',
+                 276,
+                 110,
+                 'Google Logo');">Add JPG pic</button>
+
+
+
+
+<script>
+
+
+
+
+var elem = document.documentElement;
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+}
+
+function show_image(src, width, height, alt) {
+    var img = document.createElement("img");
+    img.src = src;
+    //img.width = src.width;
+  //  img.height = src.height;
+    img.alt = alt;
+
+    // This next line will just add it to the <body> tag
+    document.body.appendChild(img);
+}
+//  http://maps.googleapis.com/maps/api/geocode/json?latlng=39.76144296429947,-104.8011589050293&sensor=false
+//  http://maps.googleapis.com/maps/api/geocode/json?latlng=39.76144296429947,-104.8011589050293&sensor=false
+
+//  https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDBsxTaBavVxP_9544dByg6ul0ZG3NnfEQ&latlng=40.570480984852566,-74.36842395042981
+
+
+function initMap() {
+
+
+
+function handleLocationError(browserHasGeolocation, iw, pos) {
+  iw.setPosition(pos);
+  iw.setContent(
+    browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation."
+  );
+  iw.open(map);
+}
+
+
+
+  const originalMapCenter = new google.maps.LatLng(40.570480984852566, -74.36842395042981);
+
+
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 13,
+//    center: { lat: 34.04924594193164, lng: -118.24104309082031 },
+//	 center: { lat: 40.570480984852566, lng: -74.36842395042981 },
+	center: originalMapCenter,
+  });
+  
+  const trafficLayer = new google.maps.TrafficLayer();
+
+  console.log("yeh");
+ 
+  trafficLayer.setMap(map);
+  
+  
+   const infowindow = new google.maps.InfoWindow({
+    content: "Change the zoom level",
+    position: originalMapCenter,
+  });
+
+  infowindow.open(map);
+
+
+ map.addListener("zoom_changed", () => {
+    infowindow.setContent("Zoom: " + map.getZoom());
+  });
+  
+  map.addListener("rightclick", () => {
+  //  infowindow.setContent("Zoom: " + map.getZoom());
+    infowindow.setContent("POW");
+	 if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          infowindow.setPosition(pos);
+          infowindow.setContent("map " + "\r\n" + pos.lat + " " + pos.lng);
+		  //console.log(pos.lat);
+		  //console.log(pos.lng);
+		  //window.alert(pos.lat + " " + pos.lng);
+          infowindow.open(map);
+          map.setCenter(pos);
+        },
+        () => {
+          handleLocationError(true, infowindow, map.getCenter());
+        }
+      );
+    } else {
+      // Browser doesn't support Geolocation
+      handleLocationError(false, infowindow, map.getCenter());
+    }
+  });
+  
+  
+  // Configure the click listener.
+  map.addListener("click", (mapsMouseEvent) => {
+    // Close the current InfoWindow.
+    //infowindow.close();
+
+    // Create a new InfoWindow.
+    const infowindow = new google.maps.InfoWindow({
+      position: mapsMouseEvent.latLng,
+    });
+    infowindow.setContent(
+      JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+    );
+   infowindow.open(map);
+  });
+  
+  
+}
+
+window.initMap = initMap;
+
+</script>
+
+<li>one</li>
+
+    <div id="map"></div>
+
+
+<br/>
+<a href="chrome://bookmarks">Bookmarks</a>
+
+<br/>
+
+<a href="https://www.dogpile.com/?sc=Bxci9QJoKEgrsOm6myyghbdjn-vb1ObM0Vt7zLZxU9Dfy7xIae8n_heqAcNV4tfH_4pv1NpyXY2sisV3SeXGDu_g0yH0fPAmIP0kBLzaZiWHWymhvhrvyPBhg0gXm6XQMi-dHDT9Yu-9PD1NIM3WjGMa75vqKU09xByvREwqY2KOkBCE3adcbgr0uGoraHTwOx1DXoTmVdcG74Y6VdEdJQxhFwpC1yxaNwOCVCqFsqsax-5d-GTJ02kLhm7wuAFsaf9_kpjGs_SFW0UGx3VT1LpBGY4biFhD75KYDfGl-baI9v3dT_kuZFkxdvbE5xb9aZtBZrU8tM7kun-CA4VbzxQ1MtHoL3MTaL7N9vrzoWTZkF3Qu0SQf9EOklIYxslE5_nr9njBB3dSESbfP2v8YZxHuqq3KMx5sv1pnS93H_heJuHwgg6FXmrUGVs1nDqFG5x6SwgOZX4OXGZ_f-wl87pjGn8wyKFWZ-3Tp1-2dHnzYDFMQ2ygEm0m6p_83g048DdhBSTpIN-vHOJ2D7kmHpiyPfBaWqXTzOz6nJQivhV2nwN5Mi90XwDhVXCmXv47I7GIdRUU7ZOZ1F_GP89MCemNH9bDhKiLNAAnDRSX_3_MpecMSWSsdAEqhXO_dh7XlM-D6yaKC7ycOt5HECVUELxqOXc-SPpRLt2w5rNZwLQ68SxmULinRNF3wzDS6_LUkkMHSZrsPi4enCTwVHLRj60sT-pztXVYMG1cxv8DTmB1C0mgpKejANg1OfnQIunenvRJp4Hz4kjG5tptTnwdIKrShibhF1OywB6z-qwfOZi2xDZCttmOBtgpeqqWgPt6Xt5XAyLxKQWSN6WiIWLBbUI1vlWjQOF3i8MmN_Ra_WapL2l0OJOcWMs8hTWVCk4bu4nZU0p8RBWC6-sGMHRVBGeDwAUzuGQDI2mVFbVn8q3hicMzfpkJLfynXIYJbmOy6v5012cIESNIlQRpV4wGJA-dcwDaxnHFEnvu1CC4n984jpYspCne6xAhlGDknGb-coFMcvbpbNdhrPXEY-Gqus_p2YdlzNAC8i_scyZTCoS7_IH5LPDDbBFRKyA2m49CcgDu755neU1N_RODpz4gHCP-9hkWowr1ltfFY7iInQlq2jaqxEw_D-kUPNBl6HNDWCsMnHvZlpNhS0rmFTaBXQ-gb6ONghcfg_UnwcTREQ6ckkwdXZQmsF9kmx0fxLpR2eTFL1DCDFPkIbF2DvxNft3VFislWoaEeRmbLTZ8EXUibepZnQcVRv3U7vymYHgeGFKKx2iZJpac_AZw5GHhrzVRpv_GdmLO1mvCRycnhz_Bq625vo_HWwDMSPlEoB1amNJx_td71lLTP67Zxc9GRQnuiXaEdB5IHIz5qTuU2oDE3nYjw2V3tKzGw5uBeRSAW3j3oQB8eW0dclioqo11KcQGcmu7PVlFxmGvRyZiLHPqlKJySh6AMiePzbHKerVeX-tsUpsmlwM5ttp3Y1ANIbNbdyURqpUHcPJE55AvWLeSXqYH9bcWcUMSOikAkPSbwtMZat-pirRn9NDUAfqKLILkSKSGBEOqCtsJhocsnKDHNbCmNz7ZFxvnTDz9N-cpwnwJaNCmMbR28ayEjTU6_N-eDWyfKhPcz0Iai4k8HJzxtCcD8xyZAc2UTDvA33avti0nUWzL0A">Dogpile</a>
+
+<br/>
+
+<a href="https://www.icloud.com/#">iCloud</a>
+
+<a href="chrome://bookmarks">Bookmarks</a>
+<br/>
+<hr/>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBsxTaBavVxP_9544dByg6ul0ZG3NnfEQ&v=3.exp&sensor=false&callback=initMap"></script>
+
+
+
+<a href="#" id="print-button" onclick="window.print();return false;">Print this page</a>
+<a href="#" id="map-button" onclick="initMap();return false;">Map with traffic</a>
+</body>
+</html>
